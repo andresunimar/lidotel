@@ -1,9 +1,9 @@
 Inicio Programa Hotel Lidotel
 
 Archivos:
-- individuales.json
-- acompañados.json 
-- grupos.json
+- individuales
+- acompañados 
+- grupos
 
 Tipos de habitación:
 1. FAMILY ROOM - $200 (4 pers)
@@ -58,7 +58,7 @@ Función RegistrarIndividual:
         fecha: fecha_actual
     }
     
-    GuardarEnArchivo(individuales.json, reserva)
+    GuardarEnArchivo(individuales, reserva)
     MostrarReserva(reserva)
 
 Función RegistrarAcompañado:
@@ -80,7 +80,7 @@ Función RegistrarAcompañado:
         fecha: fecha_actual
     }
     
-    GuardarEnArchivo(acompañados.json, reserva)
+    GuardarEnArchivo(acompañados, reserva)
     MostrarReserva(reserva)
 
 Función RegistrarGrupo:
@@ -113,7 +113,7 @@ Función RegistrarGrupo:
         fecha: fecha_actual
     }
     
-    GuardarEnArchivo(grupos.json, reserva)
+    GuardarEnArchivo(grupos, reserva)
     MostrarReserva(reserva)
 
 Función PedirDatosPersonales:
