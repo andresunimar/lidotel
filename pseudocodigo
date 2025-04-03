@@ -1,0 +1,44 @@
+Inicio
+     inicialización de variables
+    nSumaC = 0
+    nSumaF = 0
+    nSumaK = 0
+    nContador = 0
+    
+    inicializar la temperatura en Celsius
+    nTemperaturaC = -273
+    
+    Bucle para procesar temperaturas
+    Mientras nTemperaturaC != 999 Hacer
+         Convertir Celsius a Fahrenheit
+        nTemperaturaF = (nTemperaturaC * 9/5) + 32
+        
+         Convertir Celsius a Kelvin
+        nTemperaturaK = nTemperaturaC + 273.15
+        
+         Acumular valores para el promedio
+        nSumaC = nSumaC + nTemperaturaC
+        nSumaF = nSumaF + nTemperaturaF
+        nSumaK = nSumaK + nTemperaturaK
+        
+         Incrementar el contador de temperaturas válidas
+        nContador = nContador + 1
+        
+         Solicitar nueva temperatura en Celsius
+        nTemperaturaC = Leer("Ingrese la temperatura en Celsius (999 para terminar): ")
+    Fin Mientras
+    
+     Calcular promedios
+    Si nContador > 0 Entonces
+        nPromedioC = nSumaC / nContador
+        nPromedioF = nSumaF / nContador
+        nPromedioK = nSumaK / nContador
+        
+         Mostrar resultados
+        Escribir("Temperatura promedio en Celsius: ", nPromedioC)
+        Escribir("Temperatura promedio en Fahrenheit: ", nPromedioF)
+        Escribir("Temperatura promedio en Kelvin: ", nPromedioK)
+    Sino
+        Escribir("No se ingresaron temperaturas válidas.")
+    Fin Si
+Fin
