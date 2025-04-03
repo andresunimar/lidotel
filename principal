@@ -1,0 +1,110 @@
+import os
+from datetime import datetime
+
+ARCHIVOS = {
+    'individual': 'clientes_individual.txt',
+    'acompañado': 'clientes_acompañado.txt',
+    'grupo': 'clientes_grupo.txt'
+}
+
+HABITACIONES = {
+    'FAMILY ROOM': {'precio': 200, 'capacidad': 4},
+    'SENCILLA': {'precio': 60, 'capacidad': 1},
+    'DOBLE': {'precio': 120, 'capacidad': 2},
+    'SUITE': {'precio': 300, 'capacidad': 3}
+}
+
+def obtener_input_valido(mensaje, tipo='texto'):
+    while True:
+        valor = input(mensaje).strip()
+        if not valor:
+            print("Error: Este campo es obligatorio.")
+            continue
+        if tipo == 'numero' and valor.isdigit():
+            return int(valor)
+        elif tipo == 'email' and '@' in valor and '.' in valor:
+            return valor
+        elif tipo == 'telefono' and valor.isdigit() and len(valor) >= 7:
+            return valor
+        elif tipo == 'cedula' and valor.isdigit() and len(valor) >= 6:
+            return valor
+        elif tipo == 'texto' and valor.replace(" ", "").isalpha():
+            return valor
+        print("Error: Formato inválido.")
+
+def cargar_clientes(tipo):
+    if os.path.exists(ARCHIVOS[tipo]):
+        with open(ARCHIVOS[tipo], 'r') as f:
+            return [line.strip() for line in f.readlines()]
+    return []
+
+def mostrar_clientes(tipo):
+    clientes = cargar_clientes(tipo)
+    if clientes:
+        print("\nRegistros existentes:")
+        for i, cliente in enumerate(clientes, 1):
+            print(f"{i}. {cliente}")
+    else:
+        print("\nNo hay registros previos.")
+
+def guardar_cliente(tipo, cliente):
+    with open(ARCHIVOS[tipo], 'a') as f:
+        f.write(cliente + "\n")
+
+def obtener_datos_persona():
+    print("\nIngrese los datos:")
+    return f"{obtener_input_valido('Nombre: ')} {obtener_input_valido('Apellido: ')}, Cédula: {obtener_input_valido('Número de cédula: ', 'cedula')}, Email: {obtener_input_valido('Email: ', 'email')}, Teléfono: {obtener_input_valido('Número de teléfono: ', 'telefono')}, Días: {obtener_input_valido('Cantidad de días de estadía: ', 'numero')}"
+
+def seleccionar_habitacion():
+    while True:
+        print("\nSeleccione una habitación:")
+        for i, (tipo, detalles) in enumerate(HABITACIONES.items(), 1):
+            print(f"{i}. {tipo} - ${detalles['precio']} por noche")
+        opcion = input("Opción: ")
+        if opcion.isdigit() and 1 <= int(opcion) <= len(HABITACIONES):
+            return list(HABITACIONES.keys())[int(opcion)-1]
+        print("Error: Opción inválida.")
+
+def calcular_costo(habitacion, dias):
+    return HABITACIONES[habitacion]['precio'] * dias
+
+def proceso_reserva(tipo):
+    mostrar_clientes(tipo)
+    if input("¿Desea registrar un nuevo cliente? (S/N): ").upper() != 'S':
+        return
+    
+    cliente = obtener_datos_persona()
+    habitacion = seleccionar_habitacion()
+    dias = int(cliente.split("Días: ")[-1])
+    costo = calcular_costo(habitacion, dias)
+    reserva = f"Cliente: {cliente}, Habitación: {habitacion}, Total: ${costo}, Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+    
+    if tipo == 'acompañado':
+        acompanante = obtener_datos_persona()
+        reserva += f", Acompañante: {acompanante}"
+    elif tipo == 'grupo':
+        adultos = [obtener_datos_persona() for _ in range(obtener_input_valido("Cantidad de adultos: ", 'numero'))]
+        ninos = [obtener_datos_persona() for _ in range(obtener_input_valido("Cantidad de niños: ", 'numero'))] if input("¿Incluye niños? (S/N): ").upper() == 'S' else []
+        reserva += f", Adultos: {', '.join(adultos)}, Niños: {', '.join(ninos)}"
+    
+    guardar_cliente(tipo, reserva)
+    print(f"\nReserva realizada con éxito:\n{reserva}")
+
+def main():
+    while True:
+        print("\n1. Nuevo Cliente\n2. Salir")
+        opcion = input("Opción: ")
+        if opcion == '1':
+            print("\n1. Individual\n2. Acompañado\n3. Grupo/Familia\n4. Atrás")
+            tipo_reserva = {'1': 'individual', '2': 'acompañado', '3': 'grupo'}.get(input("Opción: "))
+            if tipo_reserva:
+                proceso_reserva(tipo_reserva)
+        elif opcion == '2':
+            print("Gracias por utilizar el sistema de reservas.")
+            break
+        else:
+            print("Error: Opción inválida.")
+
+i = 1
+if i == 1:
+    main()
