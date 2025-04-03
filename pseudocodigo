@@ -1,44 +1,148 @@
-Inicio
-     inicialización de variables
-    nSumaC = 0
-    nSumaF = 0
-    nSumaK = 0
-    nContador = 0
+Inicio Programa Hotel Lidotel
+
+Archivos:
+- individuales.json
+- acompañados.json 
+- grupos.json
+
+Tipos de habitación:
+1. FAMILY ROOM - $200 (4 pers)
+2. SENCILLA - $60 (1 pers)
+3. DOBLE - $120 (2 pers) 
+4. SUITE - $300 (4 pers)
+
+Función Principal:
+    Mientras verdadero:
+        Mostrar "1. Nueva reserva"
+        Mostrar "2. Salir"
+        
+        Leer opcion
+        
+        Si opcion es 1:
+            Llamar MenuTiposReserva
+        Si opcion es 2:
+            Salir
+        Sino:
+            Mostrar "Opción no válida"
+
+Función MenuTiposReserva:
+    Mostrar "Tipo de reserva:"
+    Mostrar "1. Individual"
+    Mostrar "2. Acompañado"
+    Mostrar "3. Grupo/Familia"
+    Mostrar "4. Volver"
     
-    inicializar la temperatura en Celsius
-    nTemperaturaC = -273
+    Leer opcion
     
-    Bucle para procesar temperaturas
-    Mientras nTemperaturaC != 999 Hacer
-         Convertir Celsius a Fahrenheit
-        nTemperaturaF = (nTemperaturaC * 9/5) + 32
-        
-         Convertir Celsius a Kelvin
-        nTemperaturaK = nTemperaturaC + 273.15
-        
-         Acumular valores para el promedio
-        nSumaC = nSumaC + nTemperaturaC
-        nSumaF = nSumaF + nTemperaturaF
-        nSumaK = nSumaK + nTemperaturaK
-        
-         Incrementar el contador de temperaturas válidas
-        nContador = nContador + 1
-        
-         Solicitar nueva temperatura en Celsius
-        nTemperaturaC = Leer("Ingrese la temperatura en Celsius (999 para terminar): ")
-    Fin Mientras
+    Según opcion:
+        Caso 1: RegistrarIndividual
+        Caso 2: RegistrarAcompañado
+        Caso 3: RegistrarGrupo
+        Caso 4: Volver
+        Default: "Opción no válida"
+
+Función RegistrarIndividual:
+    cliente = PedirDatosPersonales()
+    habitacion = ElegirHabitacion()
     
-     Calcular promedios
-    Si nContador > 0 Entonces
-        nPromedioC = nSumaC / nContador
-        nPromedioF = nSumaF / nContador
-        nPromedioK = nSumaK / nContador
+    Si habitacion.capacidad < 1:
+        Mostrar "Habitación no adecuada"
+        Volver
+    
+    total = CalcularTotal(habitacion.precio, cliente.dias)
+    
+    reserva = {
+        cliente: cliente,
+        habitacion: habitacion,
+        total: total,
+        fecha: fecha_actual
+    }
+    
+    GuardarEnArchivo(individuales.json, reserva)
+    MostrarReserva(reserva)
+
+Función RegistrarAcompañado:
+    cliente = PedirDatosPersonales()
+    acompañante = PedirDatosPersonales() 
+    habitacion = ElegirHabitacion()
+    
+    Si habitacion.capacidad < 2:
+        Mostrar "Necesita habitación para 2+ personas"
+        Volver
+    
+    total = CalcularTotal(habitacion.precio, cliente.dias)
+    
+    reserva = {
+        cliente: cliente,
+        acompañante: acompañante,
+        habitacion: habitacion,
+        total: total,
+        fecha: fecha_actual
+    }
+    
+    GuardarEnArchivo(acompañados.json, reserva)
+    MostrarReserva(reserva)
+
+Función RegistrarGrupo:
+    adultos = []
+    niños = []
+    
+    num_adultos = PedirNumero("Cantidad adultos:")
+    Para i desde 1 hasta num_adultos:
+        adultos.agregar(PedirDatosPersonales())
+    
+    Si Confirmar("¿Tiene niños? (S/N)"):
+        num_niños = PedirNumero("Cantidad niños:")
+        Para i desde 1 hasta num_niños:
+            niños.agregar(PedirDatosNiño())
+    
+    habitacion = ElegirHabitacion()
+    total_personas = adultos.longitud + niños.longitud
+    
+    Si habitacion.capacidad < total_personas:
+        Mostrar "Habitación muy pequeña"
+        Volver
+    
+    total = CalcularTotalGrupo(habitacion.precio, adultos[0].dias, total_personas)
+    
+    reserva = {
+        adultos: adultos,
+        niños: niños,
+        habitacion: habitacion,
+        total: total,
+        fecha: fecha_actual
+    }
+    
+    GuardarEnArchivo(grupos.json, reserva)
+    MostrarReserva(reserva)
+
+Función PedirDatosPersonales:
+    Mostrar "Ingrese datos:"
+    nombre = PedirTexto("Nombre:")
+    apellido = PedirTexto("Apellido:")
+    cedula = PedirNumero("Cédula:")
+    email = PedirEmail("Email:")
+    telefono = PedirNumero("Teléfono:")
+    dias = PedirNumero("Días de estadía:")
+    
+    Devolver {nombre, apellido, cedula, email, telefono, dias}
+
+Función ElegirHabitacion:
+    Mientras verdadero:
+        Mostrar "Habitaciones disponibles:"
+        Mostrar "1. FAMILY ROOM - $200"
+        Mostrar "2. SENCILLA - $60"
+        Mostrar "3. DOBLE - $120"
+        Mostrar "4. SUITE - $300"
         
-         Mostrar resultados
-        Escribir("Temperatura promedio en Celsius: ", nPromedioC)
-        Escribir("Temperatura promedio en Fahrenheit: ", nPromedioF)
-        Escribir("Temperatura promedio en Kelvin: ", nPromedioK)
-    Sino
-        Escribir("No se ingresaron temperaturas válidas.")
-    Fin Si
-Fin
+        opcion = PedirNumero("Elija (1-4):")
+        
+        Si opcion entre 1 y 4:
+            habitacion = ObtenerHabitacion(opcion)
+            MostrarDetalles(habitacion)
+            Si Confirmar("¿Confirmar? (S/N)"):
+                Devolver habitacion
+        Sino:
+            Mostrar "Opción no válida"
+
+Fin Programa
